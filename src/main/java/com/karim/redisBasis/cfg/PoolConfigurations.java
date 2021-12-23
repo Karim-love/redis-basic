@@ -30,13 +30,12 @@ public class PoolConfigurations {
     private static Logger logger = SysLogger.getInstance().getLogger();
 
     private PoolConfigurations() {
-        INSTANCE_NAME = "[PoolConfigurations#" + this.hashCode() + "]";
+        INSTANCE_NAME = "[###PoolConfigurations####" + this.hashCode() + "]";
         init();
     }
 
     public static PoolConfigurations getInstance() {
         if( _instance == null ) {
-            /* 제일 처음에만 동기화 하도록 함 */
             synchronized(PoolConfigurations.class) {
                 if( _instance == null ) {
                     _instance = new PoolConfigurations();
@@ -48,7 +47,7 @@ public class PoolConfigurations {
 
     private void init() {
 
-        String poolPath = StaticProperties.getInstance().getString("common.pool.path", "config/pool.yml");
+        String poolPath = Properties.getInstance().getString("common.pool.path", "config/pool.yml");
         redisLoad(poolPath);
     }
 
@@ -64,7 +63,7 @@ public class PoolConfigurations {
         }
         logger.info("{} => redis configurations : {}", INSTANCE_NAME, root);
 
-        String redisPoolId = StaticProperties.getInstance().getString("common.redis.id", "r1");
+        String redisPoolId = Properties.getInstance().getString("common.redis.id", "r1");
 
         // 1. Redis Setting
         JsonArray redisRoot = root.has("redis") ? root.get("redis").getAsJsonArray() : null;

@@ -20,12 +20,12 @@
     </appender>
 
     <appender name="redis-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>${LOG_DIR}/kafka.log</File>
+        <File>${LOG_DIR}/redis.log</File>
         <encoder>
             <pattern>[%d{yyyyMMddHHmmss.SSS}] [%thread] %-5level %logger{35} - %m%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR}/kafka.log.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/redis.log.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
             <maxHistory>${LOG_HISTORY}</maxHistory>
             <maxFileSize>500MB</maxFileSize>
         </rollingPolicy>

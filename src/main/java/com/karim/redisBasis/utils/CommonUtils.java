@@ -14,7 +14,6 @@ public class CommonUtils {
             if (i == 0) {
                 str.append(e.toString()).append("\n").append(element[i].getClassName()).append(" : ").append(e.getLocalizedMessage()).append("\n");
             }
-
             str.append("\tat ").append(element[i].getClassName()).append(".").append(element[i].getMethodName()).append("(").append(element[i].getFileName()).append(":").append(element[i].getLineNumber()).append(")").append("\n");
         }
 

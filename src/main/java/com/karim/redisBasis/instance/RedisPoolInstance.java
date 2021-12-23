@@ -17,7 +17,6 @@ public class RedisPoolInstance extends ConcurrentHashMap<String, RedisPoolObject
     private static volatile RedisPoolInstance _instance = null;
     public static RedisPoolInstance getInstance() {
         if( _instance == null ) {
-            /* 제일 처음에만 동기화 하도록 함 */
             synchronized(RedisPoolInstance.class) {
                 if( _instance == null ) {
                     _instance = new RedisPoolInstance();

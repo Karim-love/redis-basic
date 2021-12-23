@@ -1,7 +1,7 @@
 package com.karim.redisBasis;
 
 import com.karim.redisBasis.cfg.PoolConfigurations;
-import com.karim.redisBasis.cfg.StaticProperties;
+import com.karim.redisBasis.cfg.Properties;
 
 /**
  * Created by sblim
@@ -12,7 +12,7 @@ public class MainProcess {
     public static void main(String[] args) {
 
         // redis 접속 정보 pool load
-        StaticProperties.getInstance();
+        Properties.getInstance();
         PoolConfigurations.getInstance();
     }
 }

@@ -2,6 +2,7 @@ package com.karim.redisBasis.cfg;
 
 
 import com.karim.redisBasis.logger.SysLogger;
+import com.karim.redisBasis.utils.CommonUtils;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.slf4j.Logger;
@@ -9,36 +10,35 @@ import org.slf4j.Logger;
 import java.util.Iterator;
 import java.util.List;
 
-public class StaticProperties {
-    private static final String PROPERTIES_FILE_PATH = "config/static.properties";
-    private static volatile StaticProperties _instance = null;
+public class Properties {
+    private static final String PROPERTIES_FILE_PATH = "config/common.properties";
+    private static volatile Properties _instance = null;
     private static PropertiesConfiguration configuration;
     private Logger logger = SysLogger.getInstance().getLogger();
     private static String lineBreaker = System.getProperty("line.separator") == null ? "\n" : System.getProperty("line.separator");
 
-    public static StaticProperties getInstance() {
+    public static Properties getInstance() {
         if (_instance == null) {
-            /* 제일 처음에만 동기화 하도록 함 */
-            synchronized (StaticProperties.class) {
+            synchronized (Properties.class) {
                 if (_instance == null) {
-                    _instance = new StaticProperties();
+                    _instance = new Properties();
                 }
             }
         }
         return _instance;
     }
 
-    private StaticProperties() {
+    private Properties() {
         try {
             logger.info("Loading the static properties file : {}", PROPERTIES_FILE_PATH);
             configuration = new PropertiesConfiguration(PROPERTIES_FILE_PATH);
         } catch (ConfigurationException e) {
-            logger.error("StaticProperties:init => {}",e.getStackTrace());
+            logger.error("StaticProperties:init => {}", CommonUtils.getStackTrace(e));
         }
     }
 
     public static void main(String[] args) {
-        StaticProperties.getInstance();
+        Properties.getInstance();
     }
 
 
@@ -138,7 +138,7 @@ public class StaticProperties {
         stringBuilder.append(lineBreaker);
         while (iterator.hasNext()) {
             key = iterator.next();
-            stringBuilder.append(key).append("=").append(configuration.getString(key, "")).append(lineBreaker);
+            stringBuilder.append(key).append("=>").append(configuration.getString(key, "")).append(lineBreaker);
         }
         return stringBuilder.toString();
     }

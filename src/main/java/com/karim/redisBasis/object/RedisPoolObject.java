@@ -37,20 +37,12 @@ public class RedisPoolObject {
     private boolean isSentinel;
 
     private int workers;
-    //private StatefulRedisConnection<String, String>[] singleConnectionArray;
-    //private StatefulRedisConnection<String, String>[] singleAsyncConnectionArray;
 
     private StatefulRedisPubSubConnection<String, String> singlePubSubConnection;
-
     private BlockingQueue<StatefulRedisConnection<String, String>> singleSyncConnectionPool;
     private BlockingQueue<StatefulRedisConnection<String, String>> singleASyncConnectionPool;
-
     private BlockingQueue<StatefulRedisClusterConnection<String, String>> clusterSyncConnectionPool;
     private BlockingQueue<StatefulRedisClusterConnection<String, String>> clusterASyncConnectionPool;
-
-    //private StatefulRedisClusterConnection<String, String>[] clusterSyncConnectionArray;
-    //private StatefulRedisClusterConnection<String, String>[] clusterAsyncConnectionArray;
-
 
     private String lineBreaker = System.getProperty("line.separator") == null ? "\n" : System.getProperty("line.separator");
     private boolean isInit = false;
@@ -291,14 +283,14 @@ public class RedisPoolObject {
             }
         }
     }
-    
+
     private boolean testActionSingle() {
 
         StatefulRedisConnection<String, String> connection = null;
         boolean result = false;
         try {
             connection = singleSyncConnectionPool.poll();
-            logger.info("{} => * TEST POOL ATTEMPT !! ", instanceName);
+            logger.info("{} => **** TEST POOL ATTEMPT **** ", instanceName);
             logger.info("{} =>  - Server \n{}", instanceName, connection.sync().info("Server"));
             logger.info("{} =>  - Memory \n{}", instanceName, connection.sync().info("Memory"));
             logger.info("{} =>  - Space  \n{}", instanceName, connection.sync().info("Keyspace"));
@@ -326,7 +318,7 @@ public class RedisPoolObject {
         try {
             connection = clusterSyncConnectionPool.poll();
 
-            logger.info("{} => * TEST POOL ATTEMPT !! ", instanceName);
+            logger.info("{} => **** TEST POOL ATTEMPT **** ", instanceName);
             logger.info("{} =>  - Info  \n{}", instanceName, connection.sync().clusterInfo());
             logger.info("{} =>  - Nodes \n{}", instanceName, connection.sync().clusterNodes());
 
