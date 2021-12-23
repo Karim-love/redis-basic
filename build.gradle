@@ -12,11 +12,6 @@ repositories {
 ext {
     base_name = "redis-basis"
     main_class = "com.karim"
-    commons_lang_ver = "3.11"
-    guava_ver = "30.1-jre"
-    gson_ver = "2.8.6"
-    logback_ver = "1.2.3"
-    junit_ver = "4.13.2"
 }
 
 dependencies {
