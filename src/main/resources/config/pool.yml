@@ -3,7 +3,7 @@
 ################
 redis:
   - id: "r1"
-    enable: true
+    use: true
     type: "single"
     uri: ["192.168.124.238:1152"]
     timeout: 5000
@@ -11,9 +11,9 @@ redis:
     workers: 16
 
   - id: "r2"
-    enable: false
+    use: false
     type: "cluster"
     uri: ["127.0.0.1:3012","127.0.0.2:3012","127.0.0.3:3012"]
     timeout: 5000
-    auth: ""
+    auth:
     workers: 0

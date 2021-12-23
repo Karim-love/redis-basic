@@ -12,14 +12,15 @@ redis 기본 동작에 대해 pkg 별로 구현한 프로젝트입니다.
 
 ## ✔️Pakage 별 정리
 
-## 1. utils, logger
+## 1. utils, logger, cfg
 - 기본 기능을 제공하는 부속 기능 및 유틸 모음
 
 ## 2. define
 - 공통 정의 변수 모음
 
-## 3. object
-- lettuce api 의 기본기능을 정의해 놓은 object 모음
+## 3. instance / object 
+- redis 접속 정보를 정의해 놓은 instance
+- lettuce api 의 기본 기능을 정의해 놓은 object
 > single / cluster
 
 ## 4. redis_type
