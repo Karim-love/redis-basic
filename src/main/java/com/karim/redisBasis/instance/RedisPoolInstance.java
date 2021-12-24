@@ -2,7 +2,6 @@ package com.karim.redisBasis.instance;
 
 import com.karim.redisBasis.object.RedisPoolObject;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -96,7 +95,5 @@ public class RedisPoolInstance extends ConcurrentHashMap<String, RedisPoolObject
     }
 
     public static void main(String[] args) {
-        RedisPoolInstance.getInstance().add("test", true, null, 3000, 5, Arrays.asList("192.168.124.236:19050"));
-        System.out.println();
     }
 }

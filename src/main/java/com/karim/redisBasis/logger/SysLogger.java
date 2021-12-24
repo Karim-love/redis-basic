@@ -18,7 +18,6 @@ public class SysLogger {
 
     public static SysLogger getInstance() {
         if (_instance == null) {
-            /* 제일 처음에만 동기화 하도록 함 */
             synchronized (SysLogger.class) {
                 if (_instance == null) {
                     _instance = new SysLogger();

@@ -60,7 +60,7 @@ public class RedisPoolObject {
             workers = Math.max(cores, 1);
         }
         this.id = id;
-        this.instanceName = "redis-pool-" + id;
+        this.instanceName = "Redis-Pool-" + id;
         this.isSingle = isSingle;
         this.workers = workers;
         this.timeout = timeout;
@@ -159,14 +159,14 @@ public class RedisPoolObject {
                 if(testActionSingle()) {
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append(lineBreaker);
-                    stringBuilder.append("================ [").append(instanceName).append("] ================").append(lineBreaker);
-                    stringBuilder.append(" 1. Redis Type            : single").append(lineBreaker);
-                    stringBuilder.append(" 2. Redis Host            : ").append(redisURI.getHost()).append(lineBreaker);
-                    stringBuilder.append(" 3. Redis Port            : ").append(redisURI.getPort()).append(lineBreaker);
-                    stringBuilder.append(" 4. Redis Timeout(ms)     : ").append(redisURI.getTimeout().toMillis()).append(" ms").append(lineBreaker);
-                    stringBuilder.append(" 5. Redis Auth            : ").append(auth).append(lineBreaker);
-                    stringBuilder.append(" 6. Redis ConnectionCount : ").append(workers).append(lineBreaker);
-                    stringBuilder.append(" 7. Redis Checker         :").append(lineBreaker);
+                    stringBuilder.append("==================== [[").append(instanceName).append("]] =====================").append(lineBreaker);
+                    stringBuilder.append(" 1. Redis Type             : single").append(lineBreaker);
+                    stringBuilder.append(" 2. Redis Host             : ").append(redisURI.getHost()).append(lineBreaker);
+                    stringBuilder.append(" 3. Redis Port             : ").append(redisURI.getPort()).append(lineBreaker);
+                    stringBuilder.append(" 4. Redis Timeout(ms)      : ").append(redisURI.getTimeout().toMillis()).append(" ms").append(lineBreaker);
+                    stringBuilder.append(" 5. Redis Auth             : ").append(auth).append(lineBreaker);
+                    stringBuilder.append(" 6. Redis ConnectionCount  : ").append(workers).append(lineBreaker);
+                    stringBuilder.append(" 7. Redis Checker          :").append(lineBreaker);
                     stringBuilder.append("   -  sync [").append(syncPingOkCount).append("/").append(workers).append("]").append(lineBreaker);
                     stringBuilder.append("   - async [").append(asyncPingOkCount).append("/").append(workers).append("]").append(lineBreaker);
                     stringBuilder.append("============================================================");
@@ -263,14 +263,14 @@ public class RedisPoolObject {
                 if(testActionCluster()) {
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append(lineBreaker);
-                    stringBuilder.append("================ [").append(instanceName).append("] ================").append(lineBreaker);
-                    stringBuilder.append(" 1. Redis Type            : cluster").append(lineBreaker);
-                    stringBuilder.append(" 2. Redis Cluster Nodes   : ").append(lineBreaker);
+                    stringBuilder.append("================== [[").append(instanceName).append("]] ==================").append(lineBreaker);
+                    stringBuilder.append(" 1. Redis Type             : cluster").append(lineBreaker);
+                    stringBuilder.append(" 2. Redis Cluster Nodes    : ").append(lineBreaker);
                     for(RedisURI redisURI : redisClusterURIList) {
                         stringBuilder.append("   - ").append(redisURI).append(lineBreaker);
                     }
-                    stringBuilder.append(" 3. Redis ConnectionCount : ").append(workers).append(lineBreaker);
-                    stringBuilder.append(" 4. Redis Checker         :").append(lineBreaker);
+                    stringBuilder.append(" 3. Redis ConnectionCount  : ").append(workers).append(lineBreaker);
+                    stringBuilder.append(" 4. Redis Checker          :").append(lineBreaker);
                     stringBuilder.append("   -  sync [").append(syncPingOkCount).append("/").append(workers).append("]").append(lineBreaker);
                     stringBuilder.append("   - async [").append(asyncPingOkCount).append("/").append(workers).append("]").append(lineBreaker);
                     stringBuilder.append("============================================================");
