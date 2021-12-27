@@ -450,25 +450,4 @@ public class RedisPoolObject {
         return timeOut;
     }
 
-    public int activeCount() {
-        if(this.isSingle) {
-            return singleSyncConnectionPool.size() + singleASyncConnectionPool.size();
-        } else {
-            return clusterSyncConnectionPool.size() + clusterASyncConnectionPool.size();
-        }
-    }
-    public int activeCountSync() {
-        if(this.isSingle) {
-            return singleSyncConnectionPool.size();
-        } else {
-            return clusterSyncConnectionPool.size();
-        }
-    }
-    public int activeCountASync() {
-        if(this.isSingle) {
-            return singleASyncConnectionPool.size();
-        } else {
-            return clusterASyncConnectionPool.size();
-        }
-    }
 }

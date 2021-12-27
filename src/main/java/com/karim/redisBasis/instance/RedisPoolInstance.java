@@ -2,7 +2,6 @@ package com.karim.redisBasis.instance;
 
 import com.karim.redisBasis.object.RedisPoolObject;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,68 +31,5 @@ public class RedisPoolInstance extends ConcurrentHashMap<String, RedisPoolObject
             return true;
         }
         return false;
-    }
-
-    public int activeCount(String pool) {
-        int size = 0;
-        RedisPoolObject poolObject = get(pool);
-        if(poolObject != null) {
-            size = poolObject.activeCount();
-        }
-        return size;
-    }
-
-    public int activeCount() {
-        int size = 0;
-        Collection<RedisPoolObject> collection = this.values();
-        if(collection != null) {
-            for (RedisPoolObject parentRedisPoolObject : collection) {
-                size += parentRedisPoolObject.activeCount();
-            }
-        }
-        return size;
-    }
-
-    public int activeCountSync(String pool) {
-        int size = 0;
-        RedisPoolObject poolObject = get(pool);
-        if(poolObject != null) {
-            size = poolObject.activeCountSync();
-        }
-        return size;
-    }
-
-    public int activeCountSync() {
-        int size = 0;
-        Collection<RedisPoolObject> collection = this.values();
-        if(collection != null) {
-            for (RedisPoolObject parentRedisPoolObject : collection) {
-                size += parentRedisPoolObject.activeCountSync();
-            }
-        }
-        return size;
-    }
-
-    public int activeCountASync(String pool) {
-        int size = 0;
-        RedisPoolObject poolObject = get(pool);
-        if(poolObject != null) {
-            size = poolObject.activeCountASync();
-        }
-        return size;
-    }
-
-    public int activeCountASync() {
-        int size = 0;
-        Collection<RedisPoolObject> collection = this.values();
-        if(collection != null) {
-            for (RedisPoolObject parentRedisPoolObject : collection) {
-                size += parentRedisPoolObject.activeCountASync();
-            }
-        }
-        return size;
-    }
-
-    public static void main(String[] args) {
     }
 }
