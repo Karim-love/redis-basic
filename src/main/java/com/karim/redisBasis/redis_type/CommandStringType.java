@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
  * Created by sblim
  * Date : 2021-12-27
  * Time : 오후 4:30
+ * https://lettuce.io/core/release/api/io/lettuce/core/api/StatefulRedisConnection.html
+ * http://redisgate.kr/redis/clients/lettuce_intro.php
  */
 public class CommandStringType {
 
@@ -62,6 +64,8 @@ public class CommandStringType {
                         syncCommands = connection.sync();
                     }
                     syncCommands.set("lim", "subin");
+                }else { // async command
+
                 }
 
             }else { // cluster 구성일 경우
