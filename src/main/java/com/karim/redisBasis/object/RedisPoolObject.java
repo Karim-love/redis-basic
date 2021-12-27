@@ -34,19 +34,21 @@ public class RedisPoolObject {
     private String id;
     private String auth;
     private boolean isSingle;
-    private boolean isSentinel;
 
     private int workers;
 
+    // PUB/SUB 이란? : https://velog.io/@wooook/REDIS-PUBSUB-%EC%9D%B4%EB%9E%80
     private StatefulRedisPubSubConnection<String, String> singlePubSubConnection;
+
     private BlockingQueue<StatefulRedisConnection<String, String>> singleSyncConnectionPool;
     private BlockingQueue<StatefulRedisConnection<String, String>> singleASyncConnectionPool;
+
     private BlockingQueue<StatefulRedisClusterConnection<String, String>> clusterSyncConnectionPool;
     private BlockingQueue<StatefulRedisClusterConnection<String, String>> clusterASyncConnectionPool;
 
     private String lineBreaker = System.getProperty("line.separator") == null ? "\n" : System.getProperty("line.separator");
     private boolean isInit = false;
-    private int timeout;
+    private int timeOut;
 
     public RedisPoolObject(String id,
                              boolean isSingle,
@@ -60,32 +62,27 @@ public class RedisPoolObject {
             workers = Math.max(cores, 1);
         }
         this.id = id;
-        this.instanceName = "Redis-Pool-" + id;
+        this.instanceName = "Redis [ " + id + " ]";
         this.isSingle = isSingle;
         this.workers = workers;
-        this.timeout = timeout;
+        this.timeOut = timeout;
         this.auth = auth;
 
-        if(this.isSentinel) {
-
+        if (this.isSingle) {
+            initRedisSingle(redisURIList, workers, timeout, auth);
         } else {
-            if (this.isSingle) {
-                initSingle(redisURIList, workers, timeout, auth);
-            } else {
-                initCluster(redisURIList, workers, timeout, auth);
-            }
+            initRedisCluster(redisURIList, workers, timeout, auth);
         }
     }
 
-    private void initSingle(List<String> redisURIList, int workers, int timeout, String auth) {
+    private void initRedisSingle(List<String> redisURIList, int workers, int timeout, String auth) {
 
         int listSize = redisURIList == null ? 0 : redisURIList.size();
 
         if(listSize > 0) {
             String uri = redisURIList.get(0);
-            if(!uri.startsWith("redis://")) {
-                uri = "redis://" + uri;
-            }
+
+            uri = "redis://" + uri;
 
             Timer timer = new HashedWheelTimer();
 
@@ -156,19 +153,19 @@ public class RedisPoolObject {
                     }
                 }
 
-                if(testActionSingle()) {
+                if(pingSingle()) {
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append(lineBreaker);
                     stringBuilder.append("==================== [[").append(instanceName).append("]] =====================").append(lineBreaker);
-                    stringBuilder.append(" 1. Redis Type             : single").append(lineBreaker);
+                    stringBuilder.append(" 1. Redis State            : Single").append(lineBreaker);
                     stringBuilder.append(" 2. Redis Host             : ").append(redisURI.getHost()).append(lineBreaker);
                     stringBuilder.append(" 3. Redis Port             : ").append(redisURI.getPort()).append(lineBreaker);
                     stringBuilder.append(" 4. Redis Timeout(ms)      : ").append(redisURI.getTimeout().toMillis()).append(" ms").append(lineBreaker);
                     stringBuilder.append(" 5. Redis Auth             : ").append(auth).append(lineBreaker);
                     stringBuilder.append(" 6. Redis ConnectionCount  : ").append(workers).append(lineBreaker);
-                    stringBuilder.append(" 7. Redis Checker          :").append(lineBreaker);
-                    stringBuilder.append("   -  sync [").append(syncPingOkCount).append("/").append(workers).append("]").append(lineBreaker);
-                    stringBuilder.append("   - async [").append(asyncPingOkCount).append("/").append(workers).append("]").append(lineBreaker);
+                    stringBuilder.append(" 7. Redis Ping Check       : ").append(lineBreaker);
+                    stringBuilder.append("   -  sync [").append(syncPingOkCount).append("//").append(workers).append("]").append(lineBreaker);
+                    stringBuilder.append("   - async [").append(asyncPingOkCount).append("//").append(workers).append("]").append(lineBreaker);
                     stringBuilder.append("============================================================");
                     stringBuilder.append(lineBreaker);
                     logger.info("{} => POOL SETTINGS INFO {}", instanceName, stringBuilder.toString());
@@ -181,7 +178,7 @@ public class RedisPoolObject {
     }
 
 
-    private void initCluster(List<String> redisURIList, int workers, int timeout, String auth) {
+    private void initRedisCluster(List<String> redisURIList, int workers, int timeout, String auth) {
 
         int listSize = redisURIList == null ? 0 : redisURIList.size();
 
@@ -192,9 +189,7 @@ public class RedisPoolObject {
             List<RedisURI> redisClusterURIList = new ArrayList<>();
             for(int i=0; i<listSize; i++) {
                 String uri = redisURIList.get(i);
-                if(!uri.startsWith("redis://")) {
-                    uri = "redis://" + uri;
-                }
+                uri = "redis://" + uri;
 
                 RedisURI redisURI = RedisURI.create(uri);
                 if(timeout > 0) {
@@ -260,19 +255,19 @@ public class RedisPoolObject {
                     }
                 }
 
-                if(testActionCluster()) {
+                if(pingCluster()) {
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append(lineBreaker);
                     stringBuilder.append("================== [[").append(instanceName).append("]] ==================").append(lineBreaker);
-                    stringBuilder.append(" 1. Redis Type             : cluster").append(lineBreaker);
+                    stringBuilder.append(" 1. Redis State            : Cluster").append(lineBreaker);
                     stringBuilder.append(" 2. Redis Cluster Nodes    : ").append(lineBreaker);
                     for(RedisURI redisURI : redisClusterURIList) {
                         stringBuilder.append("   - ").append(redisURI).append(lineBreaker);
                     }
                     stringBuilder.append(" 3. Redis ConnectionCount  : ").append(workers).append(lineBreaker);
-                    stringBuilder.append(" 4. Redis Checker          :").append(lineBreaker);
-                    stringBuilder.append("   -  sync [").append(syncPingOkCount).append("/").append(workers).append("]").append(lineBreaker);
-                    stringBuilder.append("   - async [").append(asyncPingOkCount).append("/").append(workers).append("]").append(lineBreaker);
+                    stringBuilder.append(" 4. Redis Ping Check       : ").append(lineBreaker);
+                    stringBuilder.append("   -  sync [").append(syncPingOkCount).append("//").append(workers).append("]").append(lineBreaker);
+                    stringBuilder.append("   - async [").append(asyncPingOkCount).append("//").append(workers).append("]").append(lineBreaker);
                     stringBuilder.append("============================================================");
                     stringBuilder.append(lineBreaker);
                     logger.info("{} => POOL SETTINGS INFO {}", instanceName, stringBuilder.toString());
@@ -284,16 +279,16 @@ public class RedisPoolObject {
         }
     }
 
-    private boolean testActionSingle() {
+    private boolean pingSingle() {
 
         StatefulRedisConnection<String, String> connection = null;
         boolean result = false;
         try {
             connection = singleSyncConnectionPool.poll();
-            logger.info("{} => **** TEST POOL ATTEMPT **** ", instanceName);
-            logger.info("{} =>  - Server \n{}", instanceName, connection.sync().info("Server"));
-            logger.info("{} =>  - Memory \n{}", instanceName, connection.sync().info("Memory"));
-            logger.info("{} =>  - Space  \n{}", instanceName, connection.sync().info("Keyspace"));
+            logger.info("{} => ******** 접속 할 Redis 상태 출력 ******** ", instanceName);
+            logger.info("{} =>  Server \n{}", instanceName, connection.sync().info("Server"));
+            logger.info("{} =>  Memory \n{}", instanceName, connection.sync().info("Memory"));
+            logger.info("{} =>  Space  \n{}", instanceName, connection.sync().info("Keyspace"));
             result = true;
             this.isInit = true;
         } catch(Exception e) {
@@ -304,23 +299,23 @@ public class RedisPoolObject {
             }
         }
         if(!result) {
-            logger.info("{} => Redis Connection Pool Fail, Verify Redis Server....", instanceName);
+            logger.info("{} => Redis Connection Fail", instanceName);
         } else {
-            logger.info("{} => Redis Connection Pool Success Loading", instanceName);
+            logger.info("{} => Redis Connection Success", instanceName);
         }
         return result;
     }
 
-    private boolean testActionCluster() {
+    private boolean pingCluster() {
 
         StatefulRedisClusterConnection<String, String> connection = null;
         boolean result = false;
         try {
             connection = clusterSyncConnectionPool.poll();
 
-            logger.info("{} => **** TEST POOL ATTEMPT **** ", instanceName);
-            logger.info("{} =>  - Info  \n{}", instanceName, connection.sync().clusterInfo());
-            logger.info("{} =>  - Nodes \n{}", instanceName, connection.sync().clusterNodes());
+            logger.info("{} => ******** 접속 할 Redis 상태 출력 ******** ", instanceName);
+            logger.info("{} =>  Cluster Info  \n{}", instanceName, connection.sync().clusterInfo());
+            logger.info("{} =>  Cluster Nodes \n{}", instanceName, connection.sync().clusterNodes());
 
             result = true;
             this.isInit = true;
@@ -333,17 +328,12 @@ public class RedisPoolObject {
             }
         }
         if(!result) {
-            logger.info("{} => Redis Connection Pool Fail, Verify Redis Server....", instanceName);
+            logger.info("{} => Redis Connection Fail", instanceName);
         } else {
-            logger.info("{} => Redis Connection Pool Success Loading", instanceName);
+            logger.info("{} => Redis Connection Success", instanceName);
         }
         return result;
     }
-
-    private int randomRange(int n1, int n2) {
-        return n1==n2 ? n1 : (int) (Math.random() * (n2 - n1 + 1)) + n1;
-    }
-
 
     public StatefulRedisConnection<String, String> getConnectionSingleSync() {
         if(singleSyncConnectionPool == null) {
@@ -457,7 +447,7 @@ public class RedisPoolObject {
     }
 
     public int getTimeout() {
-        return timeout;
+        return timeOut;
     }
 
     public int activeCount() {
