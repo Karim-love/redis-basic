@@ -5,7 +5,7 @@ redis:
   - id: "r1"
     use: true
     type: "single"
-    uri: ["192.168.124.238:1230"]
+    uri: ["192.168.124.238:1111"]
     timeout: 5000
     auth:
     workers: 0

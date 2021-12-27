@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.karim.redisBasis.define.CommonDefine;
 import com.karim.redisBasis.instance.RedisPoolInstance;
 import com.karim.redisBasis.logger.SysLogger;
 import org.apache.commons.lang3.StringUtils;
@@ -63,7 +64,7 @@ public class PoolConfigurations {
         }
         logger.info("{} => redis configurations : {}", INSTANCE_NAME, root);
 
-        String redisPoolId = Properties.getInstance().getString("common.redis.id", "r1");
+        CommonDefine.REDIS_ID = Properties.getInstance().getString("common.redis.id", "r1");
 
         // 1. Redis Setting
         JsonArray redisRoot = root.has("redis") ? root.get("redis").getAsJsonArray() : null;
@@ -76,7 +77,7 @@ public class PoolConfigurations {
                 if (StringUtils.isEmpty(id)){
                     continue;
                 }
-                if (!redisPoolId.equals(id)){
+                if (!CommonDefine.REDIS_ID.equals(id)){
                     continue;
                 }
 
