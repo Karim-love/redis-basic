@@ -5,6 +5,7 @@ import com.karim.redisBasis.instance.RedisPoolInstance;
 import com.karim.redisBasis.logger.SysLogger;
 import com.karim.redisBasis.object.RedisPoolObject;
 import com.karim.redisBasis.utils.CommonUtils;
+import io.lettuce.core.LettuceFutures;
 import io.lettuce.core.RedisFuture;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
@@ -56,7 +57,6 @@ public class CommandStringType {
         try {
             // single 구성일 경우
             if (singleRedis){
-
                 // sync command
                 if (syncType.equals("sync")){
                     if (connection == null) {
@@ -65,7 +65,20 @@ public class CommandStringType {
                     }
                     syncCommands.set("lim", "subin");
                 }else { // async command
+                    if (connection == null){
+                        connection = redisPoolObject.getConnectionSingleAsync(redisTimeout, TimeUnit.MILLISECONDS);
+                        asyncCommands = connection.async();
+                        asyncCommands.setAutoFlushCommands(false);
+                    }
+                    futures.add(asyncCommands.set("lim","subin"));
+                    futures.add(asyncCommands.set("lim2","subin2"));
 
+                    asyncCommands.flushCommands();
+
+                    int futureSize = futures == null ? 0 : futures.size();
+                    if (futureSize > 0) {
+                        LettuceFutures.awaitAll(1000, TimeUnit.MILLISECONDS, futures.toArray(new RedisFuture[futureSize]));
+                    }
                 }
 
             }else { // cluster 구성일 경우

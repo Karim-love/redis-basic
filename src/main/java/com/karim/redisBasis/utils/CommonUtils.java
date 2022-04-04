@@ -8,16 +8,14 @@ package com.karim.redisBasis.utils;
 public class CommonUtils {
     public static String getStackTrace(Exception e) {
         StackTraceElement[] element = e.getStackTrace();
-        StringBuffer str = new StringBuffer();
+        StringBuilder str = new StringBuilder();
 
-        for(int i = 0; i < element.length && i < element.length; ++i) {
+        for(int i = 0; i < element.length; ++i) {
             if (i == 0) {
                 str.append(e.toString()).append("\n").append(element[i].getClassName()).append(" : ").append(e.getLocalizedMessage()).append("\n");
             }
             str.append("\tat ").append(element[i].getClassName()).append(".").append(element[i].getMethodName()).append("(").append(element[i].getFileName()).append(":").append(element[i].getLineNumber()).append(")").append("\n");
         }
-
-        element = null;
         return str.toString();
     }
 }
