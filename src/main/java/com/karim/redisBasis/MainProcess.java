@@ -21,7 +21,7 @@ public class MainProcess {
 
         if (REDIS_TYPE.equals("string")){
             CommandStringType commandStringType = new CommandStringType();
-            commandStringType.setString();
+            commandStringType.setString("sync", "lim", "subin");
         }
     }
 }

@@ -31,9 +31,7 @@ public class CommandStringType {
     private static Logger logger = SysLogger.getInstance().getLogger();
 
     // NOTE: String Set command
-    public void setString(){
-        String redisKey;
-        String redisValue;
+    public void setString(String type, String key, String value){
 
         RedisPoolObject redisPoolObject = RedisPoolInstance.getInstance().get(CommonDefine.REDIS_ID);
 
@@ -52,26 +50,24 @@ public class CommandStringType {
         // command 를 여러 개 몰아서 push
         List<RedisFuture<?>> futures = new ArrayList<>();
 
-        String syncType = "sync";
-
         try {
             // single 구성일 경우
             if (singleRedis){
                 // sync command
-                if (syncType.equals("sync")){
+                if (type.equals("sync")){
                     if (connection == null) {
                         connection = redisPoolObject.getConnectionSingleSync(redisTimeout, TimeUnit.MILLISECONDS);
                         syncCommands = connection.sync();
                     }
-                    syncCommands.set("lim", "subin");
+                    syncCommands.set(key, value);
                 }else { // async command
                     if (connection == null){
                         connection = redisPoolObject.getConnectionSingleAsync(redisTimeout, TimeUnit.MILLISECONDS);
                         asyncCommands = connection.async();
                         asyncCommands.setAutoFlushCommands(false);
                     }
-                    futures.add(asyncCommands.set("lim","subin"));
-                    futures.add(asyncCommands.set("lim2","subin2"));
+                    futures.add(asyncCommands.set(key, value));
+                    futures.add(asyncCommands.set(key, value));
 
                     asyncCommands.flushCommands();
 
@@ -82,7 +78,29 @@ public class CommandStringType {
                 }
 
             }else { // cluster 구성일 경우
+                // sync command
+                if (type.equals("sync")){
+                    if (connectionCluster == null) {
+                        connectionCluster = redisPoolObject.getConnectionClusterSync(redisTimeout, TimeUnit.MILLISECONDS);
+                        syncCommandsCluster = connectionCluster.sync();
+                    }
+                    syncCommandsCluster.set(key, value);
+                }else { // async command
+                    if (connectionCluster == null){
+                        connectionCluster = redisPoolObject.getConnectionClusterAsync(redisTimeout, TimeUnit.MILLISECONDS);
+                        asyncCommandsCluster = connectionCluster.async();
+                        asyncCommandsCluster.setAutoFlushCommands(false);
+                    }
+                    futures.add(asyncCommandsCluster.set(key, value));
+                    futures.add(asyncCommandsCluster.set(key, value));
 
+                    asyncCommandsCluster.flushCommands();
+
+                    int futureSize = futures == null ? 0 : futures.size();
+                    if (futureSize > 0) {
+                        LettuceFutures.awaitAll(1000, TimeUnit.MILLISECONDS, futures.toArray(new RedisFuture[futureSize]));
+                    }
+                }
             }
         }catch (Exception e){
             logger.error("Redis Exception : {}", CommonUtils.getStackTrace(e));
