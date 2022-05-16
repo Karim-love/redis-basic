@@ -2,7 +2,7 @@ package com.karim.redisBasis;
 
 import com.karim.redisBasis.cfg.PoolConfigurations;
 import com.karim.redisBasis.cfg.Properties;
-import com.karim.redisBasis.redis_type.CommandStringType;
+import com.karim.redisBasis.command.CommandStringType;
 
 /**
  * Created by sblim

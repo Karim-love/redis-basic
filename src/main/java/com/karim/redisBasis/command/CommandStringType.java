@@ -1,4 +1,4 @@
-package com.karim.redisBasis.redis_type;
+package com.karim.redisBasis.command;
 
 import com.karim.redisBasis.define.CommonDefine;
 import com.karim.redisBasis.instance.RedisPoolInstance;
