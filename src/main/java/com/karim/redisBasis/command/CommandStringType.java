@@ -50,17 +50,34 @@ public class CommandStringType {
         // command 를 여러 개 몰아서 push
         List<RedisFuture<?>> futures = new ArrayList<>();
 
-        try {
-            // single 구성일 경우
-            if (singleRedis){
-                // sync command
-                if (type.equals("sync")){
+        // single 구성일 경우
+        if (type.equals("sync")){
+            try{
+                if (singleRedis){
                     if (connection == null) {
                         connection = redisPoolObject.getConnectionSingleSync(redisTimeout, TimeUnit.MILLISECONDS);
                         syncCommands = connection.sync();
                     }
                     syncCommands.set(key, value);
-                }else { // async command
+                }else {
+                    if (connectionCluster == null) {
+                        connectionCluster = redisPoolObject.getConnectionClusterSync(redisTimeout, TimeUnit.MILLISECONDS);
+                        syncCommandsCluster = connectionCluster.sync();
+                    }
+                    syncCommandsCluster.set(key, value);
+                }
+            }catch (Exception e){
+                logger.error("Redis Exception : {}", CommonUtils.getStackTrace(e));
+            }finally {
+                if (connection != null) {
+                    redisPoolObject.returnSingleResource(true, connection);
+                } else if (connectionCluster != null) {
+                    redisPoolObject.returnClusterResource(true, connectionCluster);
+                }
+            }
+        }else { // async 일 때
+            try{
+                if (singleRedis){
                     if (connection == null){
                         connection = redisPoolObject.getConnectionSingleAsync(redisTimeout, TimeUnit.MILLISECONDS);
                         asyncCommands = connection.async();
@@ -75,17 +92,7 @@ public class CommandStringType {
                     if (futureSize > 0) {
                         LettuceFutures.awaitAll(1000, TimeUnit.MILLISECONDS, futures.toArray(new RedisFuture[futureSize]));
                     }
-                }
-
-            }else { // cluster 구성일 경우
-                // sync command
-                if (type.equals("sync")){
-                    if (connectionCluster == null) {
-                        connectionCluster = redisPoolObject.getConnectionClusterSync(redisTimeout, TimeUnit.MILLISECONDS);
-                        syncCommandsCluster = connectionCluster.sync();
-                    }
-                    syncCommandsCluster.set(key, value);
-                }else { // async command
+                }else {
                     if (connectionCluster == null){
                         connectionCluster = redisPoolObject.getConnectionClusterAsync(redisTimeout, TimeUnit.MILLISECONDS);
                         asyncCommandsCluster = connectionCluster.async();
@@ -101,14 +108,14 @@ public class CommandStringType {
                         LettuceFutures.awaitAll(1000, TimeUnit.MILLISECONDS, futures.toArray(new RedisFuture[futureSize]));
                     }
                 }
-            }
-        }catch (Exception e){
-            logger.error("Redis Exception : {}", CommonUtils.getStackTrace(e));
-        }finally {
-            if (connection != null) {
-                redisPoolObject.returnSingleResource(true, connection);
-            } else if (connectionCluster != null) {
-                redisPoolObject.returnClusterResource(true, connectionCluster);
+            }catch (Exception e){
+                logger.error("Redis Exception : {}", CommonUtils.getStackTrace(e));
+            }finally {
+                if (connection != null) {
+                    redisPoolObject.returnSingleResource(false, connection);
+                } else if (connectionCluster != null) {
+                    redisPoolObject.returnClusterResource(false, connectionCluster);
+                }
             }
         }
     }
