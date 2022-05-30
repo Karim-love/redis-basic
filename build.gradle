@@ -2,6 +2,27 @@ plugins {
     id 'java'
 }
 
+apply plugin: 'java'
+apply plugin: 'java-library-distribution'
+apply plugin: 'maven-publish'
+apply plugin: 'idea'
+apply plugin: 'application'
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+[configurations.default]*.exclude(module: 'commons-logging')
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+project.configurations.implementation.setCanBeResolved(true)
+project.configurations.api.setCanBeResolved(true)
+configurations.all {
+    // check for updates every build
+    resolutionStrategy {
+        cacheDynamicVersionsFor 0, 'seconds'
+        cacheChangingModulesFor 0, 'seconds'
+    }
+}
+
+
 group 'com.karim'
 version '1.0-SNAPSHOT'
 
@@ -26,6 +47,24 @@ dependencies {
     implementation group: 'commons-configuration', name: 'commons-configuration', version: '1.10'
 
     implementation group: 'io.lettuce', name: 'lettuce-core', version: '6.1.8.RELEASE'
+}
+
+jar {
+    include("*.class*")
+    include("**/*.class*")
+    archiveName("${project.name}-${project.version}.jar")
+    //noinspection GroovyAssignabilityCheck
+    manifest {
+        //noinspection UnnecessaryQualifiedReference
+        attributes "Implementation-Title" : "${project.name}",
+                "Implementation-Version" : "${project.version}",
+                "Implementation-Created-By" : "KARIM Inc.",
+                "Implementation-Built-By" : "Gradle ${gradle.gradleVersion} " + new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+                "Implementation-Build-Jdk" : "${System.getProperty('java.version')} (${System.getProperty('java.vendor')} ${System.getProperty('java.vm.version')})",
+                "Implementation-Build-OS" : "${System.getProperty('os.name')} ${System.getProperty('os.arch')} ${System.getProperty('os.version')}",
+                "Main-Class": "com.karim.redisBasis.MainProcess",
+                "Class-Path": ". " + project.configurations.implementation.collect { "lib/$it.name" }.join(' ')
+    }
 }
 
 test {
