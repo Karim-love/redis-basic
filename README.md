@@ -22,10 +22,10 @@ redis 기본 동작에 대해 pkg 별로 구현한 프로젝트입니다.
 - redis 접속 정보를 정의해 놓은 instance
 - lettuce api 의 기본 기능을 구현해 놓은 object
   - 접속 / 핑 / 종료 등 구현
-    > http://redisgate.kr/redis/clients/lettuce_intro.php
-> single / cluster
+    > http://redisgate.kr/redis/clients/lettuce_intro.php  
+    > single / cluster
 
 ## 4. redis_type
 - 데이터 타입별로 명령어 기능 구현
-> sync / async
+   > sync / async
 
